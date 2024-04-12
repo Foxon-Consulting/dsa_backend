@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  python-toolkit:
+    image: foxonconsulting/python-toolkit:1.0.1
+    volumes:
+      - //var/run/docker.sock:/var/run/docker.sock
+      - ./:/document_sorting_assistant
+    container_name: "document_sorting_assistant-toolkit_cn"
+    restart: unless-stopped
+    command: bash -c "while true; do sleep 1; done"

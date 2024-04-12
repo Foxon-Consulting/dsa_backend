@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools >= 57.0", "wheel" ]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "document_sorting_assistant"
+version = "0.0.0"
+description = "Project description"
+requires-python = ">=3.11"
+readme = "README.md"
+authors = [ { name = "Louis", email = "louis.dalonis@gmail.com"}]
+
+dependencies = [
+  "tomli"
+]
+
+[project.optional-dependencies]
+ci = ["black", "coverage", "pylint", "flake8"]
+cd = ["twine"]
+
+[project.scripts]
+docsort = "common.docsort:main"
+
+[tool.black]
+line-length = 79
+use-tabs = false
+tab-width = 2

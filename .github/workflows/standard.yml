@@ -1,0 +1,55 @@
+name: integration
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches-ignore:
+      - "release-please--*"
+  release:
+    types:
+      - published
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: pre-commit
+        uses: Foxon-Consulting/github-actions/integration/common/pre-commit@main
+
+  integration:
+    uses: Foxon-Consulting/github-actions/.github/workflows/python_integration.yml@main
+    with:
+      python_version: "{{cookiecutter.python_version}}"
+
+  releasing:
+    runs-on: ubuntu-latest
+    needs:
+      - pre-commit
+      - integration
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: releasing
+        uses: Foxon-Consulting/github-actions/delivery/common/release-please@main
+        with:
+          RELEASE_PLEASE_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+
+  delivery:
+    needs:
+      - releasing
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: Foxon-Consulting/github-actions/.github/workflows/python_delivery.yml@main
+
+  deployment:
+    needs:
+      - releasing
+      - delivery
+    if: github.ref == 'refs/heads/dev'
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: Foxon-Consulting/github-actions/.github/workflows/python_deployment.yml@main
