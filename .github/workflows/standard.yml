@@ -21,7 +21,7 @@ jobs:
   integration:
     uses: Foxon-Consulting/github-actions/.github/workflows/python_integration.yml@main
     with:
-      python_version: "{{cookiecutter.python_version}}"
+      python_version: "3.11"
 
   releasing:
     runs-on: ubuntu-latest
