@@ -7,10 +7,10 @@ from . import config
 
 def _docsort(**kwargs):
     from dsa.entrypoint import main as dsa_main
+
     dsa_main()
 
     return "END"
-
 
 
 def main():

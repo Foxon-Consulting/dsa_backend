@@ -1,8 +1,10 @@
 from langchain_community import tools
 
+
 class Agent:
     def __init__(self, document_loader: tools.UploadDocument):
         self.document_loader = document_loader
+
 
 class GoogleDriveAgent(Agent):
     def __init__(self, document_loader: tools.UploadDocument):
