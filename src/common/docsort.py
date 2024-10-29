@@ -5,11 +5,12 @@ logging.getLogger().setLevel(logging.DEBUG)
 from . import config
 
 
-def _docsort(argA, argB):
-    return {
-        "argA": argA,
-        "argB": argB,
-    }
+def _docsort(**kwargs):
+    from dsa.entrypoint import main as dsa_main
+
+    dsa_main()
+
+    return "END"
 
 
 def main():
@@ -20,28 +21,28 @@ def main():
         description="docsort script",
     )
 
-    script_parser.add_argument(
-        "-a",
-        "--argA",
-        action="store",
-        metavar="arg1",
-        help="docsort argA",
-        required=True,
-    )
+    # script_parser.add_argument(
+    #     "-a",
+    #     "--argA",
+    #     action="store",
+    #     metavar="arg1",
+    #     help="docsort argA",
+    #     required=True,
+    # )
 
-    script_parser.add_argument(
-        "-b",
-        "--argB",
-        action="store",
-        metavar="color",
-        help="docsort color",
-        required=True,
-    )
+    # script_parser.add_argument(
+    #     "-b",
+    #     "--argB",
+    #     action="store",
+    #     metavar="color",
+    #     help="docsort color",
+    #     required=True,
+    # )
 
     result = _docsort(**vars(script_parser.parse_args()))
 
     # Example how to access config toml file
-    logging.debug(config)
+    # logging.debug(config)
 
     # Using **vars() to convert Namespace to dict
     logging.debug(result)

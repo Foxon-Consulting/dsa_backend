@@ -11,7 +11,10 @@ readme = "README.md"
 authors = [ { name = "Louis", email = "louis.dalonis@gmail.com"}]
 
 dependencies = [
-  "tomli"
+  "tomli",
+  "langchain-community",
+  "langchain-openai",
+  "faiss-cpu"
 ]
 
 [project.optional-dependencies]
