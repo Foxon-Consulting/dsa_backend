@@ -3,6 +3,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_community.llms import CTransformers
+import os
 
 # Extract text from PDF
 def load_pdf(data):
@@ -15,7 +16,16 @@ def load_pdf(data):
 
     return documents
 
+# Generate directory tree
+def generate_tree(starting_directory):
+    tree = ""
+    for root, directories, files in os.walk(starting_directory):
+        tree += f"Directory: {root}\n"
 
+    if tree == "":
+        raise ValueError("The directory is empty")
+
+    return tree
 
 # Create text chunks
 def text_split(extracted_data):
