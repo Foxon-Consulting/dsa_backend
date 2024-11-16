@@ -13,7 +13,7 @@ from crewai_tools import PDFSearchTool
 
 # Choice of LLM model
 llm = LLM(
-    api_key="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",
+    api_key=os.getenv("OPENAI_API_KEY"),
     model="gpt-3.5-turbo",
 )
 
