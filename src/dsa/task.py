@@ -3,6 +3,7 @@ from textwrap import dedent
 from typing import List
 from pathlib import Path
 
+
 class RenameTask(Task):
 
     def __init__(self, agent):
@@ -16,6 +17,7 @@ class RenameTask(Task):
             expected_output="propose a name for the file and its corresponding date (if it exists) with ONLY THE following format: '<year-month-day> <name of the file>'",
             agent=agent,
         )
+
 
 class SortTask(Task):
 
