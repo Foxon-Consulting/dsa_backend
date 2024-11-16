@@ -1,9 +1,7 @@
 from crewai import Task
 from textwrap import dedent
-
-# TODO: Implement CrewAI tasks
-#1st Task Renamer
-#2nd Task Sorter
+from typing import List
+from pathlib import Path
 
 class RenameTask(Task):
 
@@ -15,20 +13,24 @@ class RenameTask(Task):
 
         """
             ),
-            expected_output="propose a name for the file and its corresponding date (if it exists) with the following format: '<year-month-day> <name of the file>'",
+            expected_output="propose a name for the file and its corresponding date (if it exists) with ONLY THE following format: '<year-month-day> <name of the file>'",
             agent=agent,
         )
 
 class SortTask(Task):
 
-    def __init__(self, agent, directory_tree):
+    def __init__(self, agent, directory_tree: List[Path]):
+
+        paths_string = ", ".join(str(p) for p in directory_tree)
+
         super().__init__(
             description=dedent(
                 f"""
-            According to the directory tree {directory_tree}, suggest where the file should be placed depending on the content of the file AND display the new name result of task 1.
+            According to the directory tree {paths_string}, suggest where the file should be placed depending on the content of the file AND display the new name result of task 1.
+            the result of this task must ONLY BE THE PATH.
 
         """
             ),
-            expected_output="Sugesst a folder from the directory tree where the file should be placed according to the file's content AND display the new name result of task 1.",
+            expected_output="DISPLAY ONLY THE PATH'",
             agent=agent,
         )
