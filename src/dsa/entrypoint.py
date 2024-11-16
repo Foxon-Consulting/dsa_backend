@@ -17,6 +17,10 @@ llm = LLM(
     model="gpt-3.5-turbo",
 )
 
+if "OPENAI_API_KEY" not in os.environ:
+    st.error("Please set the OPENAI_API_KEY environment variable.")
+    st.stop()
+
 # Setting Path for sorted directory
 def generate_tree(starting_directory: Path = Path("./src/dsa/dir")) -> List[Path]:
     return [p for p in starting_directory.rglob("*") if p.is_dir()]
