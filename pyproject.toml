@@ -14,7 +14,9 @@ dependencies = [
   "tomli",
   "langchain-community",
   "langchain-openai",
-  "faiss-cpu"
+  "faiss-cpu",
+  "crewai",
+  "streamlit"
 ]
 
 [project.optional-dependencies]
