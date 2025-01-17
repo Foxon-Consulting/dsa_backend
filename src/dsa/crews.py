@@ -1,5 +1,5 @@
-from dsa.task import RenameTask, SortTask
-from dsa.agent import PDFAnalystAgent
+from dsa.tasks import RenameTask, SortTask
+from dsa.agents import PDFAnalystAgent
 from crewai import Crew
 from typing import List
 from pathlib import Path
