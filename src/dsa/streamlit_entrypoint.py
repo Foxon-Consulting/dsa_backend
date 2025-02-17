@@ -7,7 +7,7 @@ from litellm import completion
 from typing import List
 from pathlib import Path
 from crewai import LLM
-from dsa import get_suggested_file_name, get_suggested_path
+from dsa.__init__ import get_suggested_file_name, get_suggested_path
 
 logging.basicConfig(
     filename="app.log",
@@ -18,6 +18,9 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M",
 )
 
+CLAUDE_API_KEY = os.getenv("CLAUDE_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OLLAMA_API_KEY = "sk-1111"
 ROOT_FOLDER = Path("tests/dir")
@@ -28,13 +31,13 @@ def main():
 
     st.title("📝 PDF Naming and Sorting App")
 
-    reader_model_selection = st.selectbox("Select a model for that wil suggest a name and a path for the following file", ["gpt-3.5-turbo", "gpt-4o-mini", "llama3.2"])
+    reader_model_selection = st.selectbox("Select a model for that wil suggest a name and a path for the following file", ["gpt-o1 mini", "gpt-4o-mini", "claude haiku", "gemini", "ollama-phi3:14b", "ollama-deepseek 32b", "ollama-llama3.2:3b", "deepseek"])
 
     def get_llm_choice(reader_model_selection):
-        if reader_model_selection == "gpt-3.5-turbo":
+        if reader_model_selection == "claude haiku":
             llm = LLM(
-                api_key = OPENAI_API_KEY,
-                model = "gpt-3.5-turbo"
+                api_key = CLAUDE_API_KEY,
+                model = "claude-3-haiku-20240307"
                 )
             return llm
         elif reader_model_selection == "gpt-4o-mini":
@@ -43,10 +46,10 @@ def main():
                 model = "gpt-4o-mini"
                 )
             return llm
-        elif reader_model_selection == "llama3.2":
+        elif reader_model_selection == "deepseek":
             llm = LLM(
-                api_key = OLLAMA_API_KEY,
-                model = "ollama/llama3.2"
+                api_key = DEEPSEEK_API_KEY,
+                model = "deepseek/deepseek-chat"
                 )
             return llm
 
@@ -79,6 +82,7 @@ def main():
 
         suggested_name = get_suggested_file_name(TEMP_FILE_PATH, llm)
 
+
         # Calling crew to execute renaming tasks
         rename_result = f"## Here is the Rename Result \n\n {suggested_name}"
         st.session_state.messages.append(
@@ -96,8 +100,8 @@ def main():
         st.chat_message("assistant").write(sort_result)
 
 
-        logging.info(f"File name suggestion: {suggested_name}")
-        logging.info(f"File path suggestion: {suggested_path}")
+        logging.info(f"File name suggestion: {rename_result}")
+        logging.info(f"File path suggestion: {sort_result}")
 
 
     # Confirmation, file moving and renaming
