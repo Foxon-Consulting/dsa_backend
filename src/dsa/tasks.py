@@ -28,11 +28,17 @@ class SortTask(Task):
         super().__init__(
             description=dedent(
                 f"""
-            According to the directory tree {paths_string}, suggest where the file should be placed depending on the content of the pdf file.
-            the result of this task must ONLY BE THE PATH. Use any tools you need to undestand the content of the pdf file and ALWAYS reffer to the directory tree {paths_string} to suggest the path.
+            IMPORTANT: You must select a directory from ONLY the given list of available directories below. Do not invent or suggest paths that are not in this list.
 
-        """
+            Available directories: {paths_string}
+
+            Based on the content of the PDF file, suggest the most appropriate directory from the above list where the file should be placed.
+            Do not create new directories or suggest paths that are not in the list.
+            The result of this task must ONLY BE ONE EXACT PATH from the list above, with no additional text or commentary.
+
+            Use any tools you need to understand the content of the PDF file, but your final answer must be an exact match to one of the directories in the list.
+            """
             ),
-            expected_output="DISPLAY ONLY THE PATH'",
+            expected_output="ONLY the exact path selected from the available directory list. No additional text, explanations, or invented paths.",
             agent=agent,
         )

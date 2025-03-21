@@ -16,7 +16,11 @@ dependencies = [
   "langchain-openai",
   "faiss-cpu",
   "crewai",
-  "streamlit"
+  "streamlit",
+  "fastapi",
+  "PyPDF2",
+  "python-magic",
+  "python-magic-bin"
 ]
 
 [project.optional-dependencies]
