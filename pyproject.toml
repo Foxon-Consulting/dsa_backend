@@ -30,8 +30,7 @@ docsort = "common.docsort:main"
 
 [tool.black]
 line-length = 79
-use-tabs = false
-tab-width = 2
+
 
 [tool.flake8]
 # Ignore invalid escape sequence warnings
