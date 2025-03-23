@@ -5,7 +5,7 @@ import os
 import mimetypes
 import PyPDF2
 import io
-import magic  # Pour une détection plus fiable du type de fichier
+
 
 MODEL = "gpt-3.5-turbo"
 
