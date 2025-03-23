@@ -8,3 +8,7 @@
 - Install the package in development mode inside the virtual environment
 
 # Give explanation of each scripts
+commands to run fastapi :
+-cd .\src\app\api
+-$env:PYTHONPATH = "../../"
+>> uvicorn main:app --reload

@@ -6,7 +6,7 @@ from . import config
 
 
 def _docsort(**kwargs):
-    from dsa.entrypoint import main as dsa_main
+    from dsa.streamlit_entrypoint import main as dsa_main
 
     dsa_main()
 

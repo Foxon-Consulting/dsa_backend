@@ -16,7 +16,9 @@ dependencies = [
   "langchain-openai",
   "faiss-cpu",
   "crewai",
-  "streamlit"
+  "streamlit",
+  "fastapi",
+  "PyPDF2"
 ]
 
 [project.optional-dependencies]
@@ -28,5 +30,18 @@ docsort = "common.docsort:main"
 
 [tool.black]
 line-length = 79
-use-tabs = false
-tab-width = 2
+
+
+[tool.flake8]
+# Ignore invalid escape sequence warnings
+ignore = ["W605"]
+# Exclude third-party libraries from checks
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv*",
+    "*.egg",
+    "build",
+    "dist"
+]
+max-line-length = 79
