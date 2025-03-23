@@ -103,10 +103,12 @@ def get_suggested_file_name(
         from crewai_tools import PDFSearchTool
 
         search_tool = PDFSearchTool(pdf=str(source_file_path))
-        log_file_name = (
-            type(search_tool).__name__ + "_" + llm.model + "_log.txt"
-        )
+        logs_dir = Path(__file__).parent.parent.parent / "logs"
+        logs_dir.mkdir(exist_ok=True)
 
+        log_file_name = str(
+            logs_dir / (type(search_tool).__name__ + "_" + llm.model + "_log.txt")
+        )
         rename_custom_crew = RenameCrew(
             [search_tool], llm, output_log_file=log_file_name
         )
@@ -162,8 +164,11 @@ def get_suggested_path(
 
         # Créer l'outil de recherche PDF
         search_tool = PDFSearchTool(pdf=str(source_file_path))
-        log_file_name = (
-            type(search_tool).__name__ + "_" + llm.model + "_log.txt"
+        logs_dir = Path(__file__).parent.parent.parent  / "logs"
+        logs_dir.mkdir(exist_ok=True)
+
+        log_file_name = str(
+            logs_dir / (type(search_tool).__name__ + "_" + llm.model + "_log.txt")
         )
 
         # Initialiser la Crew avec l'arborescence de dossiers disponibles

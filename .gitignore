@@ -167,3 +167,4 @@ db/**
 **/temp_upload/*
 **/temp_upload/*.pdf
 **/dir/**/*.pdf
+/logs/*
