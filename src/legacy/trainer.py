@@ -20,11 +20,14 @@ llm = LLM(
     model=model,
 )
 
+
 # Setting Path for sorted directory
 def generate_tree(starting_directory: Path = Path("tests/dir")) -> List[Path]:
     return [p for p in starting_directory.rglob("*") if p.is_dir()]
 
+
 path_list = generate_tree()
+
 
 def main():
     try:
@@ -33,17 +36,18 @@ def main():
             tools=[search_tool],
             llm=llm,
             output_log_file="trained_rename_crew.md",
-            trained_model_path=renameing_trained_filename
+            trained_model_path=renameing_trained_filename,
         )
 
         # Call train method with only the required parameters
         crew.train(
             n_iterations=n_iterations,
             inputs=inputs,
-            filename=renameing_trained_filename
+            filename=renameing_trained_filename,
         )
     except Exception as e:
         raise Exception(f"Error in training RenameCrew: {e}")
+
 
 if __name__ == "__main__":
     main()

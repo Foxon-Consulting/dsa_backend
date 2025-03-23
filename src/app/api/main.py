@@ -23,39 +23,45 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class DirectoryTreeResponse(BaseModel):
     tree: List[Path]
+
 
 class DirectoryTreeRequest(BaseModel):
     root_folder: Path
 
+
 class FileNameRequest(BaseModel):
     file_path: str
+
 
 class FilePathRequest(BaseModel):
     root_folder: str
     file_path: str
 
+
 class SuggestionResponse(BaseModel):
     suggestion: str
+
 
 class MoveAndRenameRequest(BaseModel):
     new_name: str
     new_path: str
+
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
     error_msg = str(exc)
     traceback_str = traceback.format_exc()
     print(f"Global exception: {error_msg}\n{traceback_str}")
-    return JSONResponse(
-        status_code=500,
-        content={"detail": error_msg}
-    )
+    return JSONResponse(status_code=500, content={"detail": error_msg})
+
 
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Document Sorting Assistant API"}
+
 
 @app.get("/get-tree", response_model=DirectoryTreeResponse)
 def get_tree_endpoint(request: DirectoryTreeRequest):
@@ -65,7 +71,10 @@ def get_tree_endpoint(request: DirectoryTreeRequest):
     except Exception as e:
         print(f"Error in get_tree: {str(e)}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error getting tree: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error getting tree: {str(e)}"
+        )
+
 
 @app.post("/suggest-filename")
 async def suggest_filename(file: UploadFile = File(...)):
@@ -73,7 +82,9 @@ async def suggest_filename(file: UploadFile = File(...)):
     temp_file = None
     try:
         # Créer un fichier temporaire pour stocker le fichier uploadé
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=f"_{file.filename}")
+        temp_file = tempfile.NamedTemporaryFile(
+            delete=False, suffix=f"_{file.filename}"
+        )
         temp_path = temp_file.name
         temp_file.close()  # Fermer le fichier pour éviter les erreurs d'accès
 
@@ -92,7 +103,9 @@ async def suggest_filename(file: UploadFile = File(...)):
     except Exception as e:
         print(f"Error in suggest_filename: {str(e)}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error processing file: {str(e)}"
+        )
     finally:
         # Supprimer le fichier temporaire
         if temp_path and os.path.exists(temp_path):
@@ -102,10 +115,10 @@ async def suggest_filename(file: UploadFile = File(...)):
             except Exception as e:
                 print(f"Failed to delete temp file: {str(e)}")
 
+
 @app.post("/suggest-path")
 async def suggest_path(
-    file: UploadFile = File(...),
-    root_folder: str = Form(...)
+    file: UploadFile = File(...), root_folder: str = Form(...)
 ):
     temp_path = None
     temp_file = None
@@ -120,14 +133,21 @@ async def suggest_path(
 
         # Vérifier si le dossier existe
         if not root_path.exists() or not root_path.is_dir():
-            print(f"Warning: User-provided directory {root_path} does not exist")
+            print(
+                f"Warning: User-provided directory {root_path} does not exist"
+            )
             return JSONResponse(
                 status_code=404,
-                content={"detail": f"Output directory does not exist: {root_folder}", "suggestion": str(root_path)}
+                content={
+                    "detail": f"Output directory does not exist: {root_folder}",
+                    "suggestion": str(root_path),
+                },
             )
 
         # Créer un fichier temporaire pour stocker le fichier uploadé
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=f"_{file.filename}")
+        temp_file = tempfile.NamedTemporaryFile(
+            delete=False, suffix=f"_{file.filename}"
+        )
         temp_path = temp_file.name
         temp_file.close()  # Fermer le fichier pour éviter les erreurs d'accès
 
@@ -145,8 +165,13 @@ async def suggest_path(
 
             # Vérifier si le chemin suggéré est valide et existe
             suggested_path_obj = Path(suggested_path)
-            if not suggested_path_obj.exists() or not suggested_path_obj.is_dir():
-                print(f"Warning: Suggested path '{suggested_path}' does not exist, using root folder")
+            if (
+                not suggested_path_obj.exists()
+                or not suggested_path_obj.is_dir()
+            ):
+                print(
+                    f"Warning: Suggested path '{suggested_path}' does not exist, using root folder"
+                )
                 suggested_path = str(root_path)
 
             print(f"Suggested path for {file.filename}: {suggested_path}")
@@ -169,11 +194,12 @@ async def suggest_path(
             except Exception as e:
                 print(f"Failed to delete temp file: {str(e)}")
 
+
 @app.post("/move-and-rename")
 async def move_and_rename_file(
     file: UploadFile = File(...),
     new_name: str = Form(...),
-    new_path: str = Form(...)
+    new_path: str = Form(...),
 ):
     try:
         print(f"Moving file {file.filename} to {new_path}/{new_name}")
@@ -231,17 +257,18 @@ async def move_and_rename_file(
             "message": f"File moved and renamed successfully to {target_path}",
             "target_path": target_path,
             "new_name": os.path.basename(target_path),
-            "new_path": os.path.dirname(target_path)
+            "new_path": os.path.dirname(target_path),
         }
     except Exception as e:
         print(f"Error in move_and_rename_file: {str(e)}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error processing file: {str(e)}"
+        )
+
 
 @app.post("/explore-directory")
-async def explore_directory(
-    root_folder: str = Form(...)
-):
+async def explore_directory(root_folder: str = Form(...)):
     try:
         print(f"Exploring directory tree for: {root_folder}")
 
@@ -251,26 +278,36 @@ async def explore_directory(
 
         # Supprimer "path.txt" ou tout autre fichier potentiellement ajouté à la fin du chemin
         if os.path.isfile(root_folder):
-            print(f"Warning: Received a file path instead of a directory: {root_folder}")
+            print(
+                f"Warning: Received a file path instead of a directory: {root_folder}"
+            )
             clean_folder = os.path.dirname(root_folder)
             print(f"Using parent directory instead: {clean_folder}")
 
         # Vérifier spécifiquement le cas de path.txt
-        if clean_folder.endswith('path.txt'):
+        if clean_folder.endswith("path.txt"):
             clean_folder = clean_folder[:-8]  # Enlever "path.txt"
             print(f"Removed path.txt from the end of the path: {clean_folder}")
 
         # Corriger les problèmes de nom d'utilisateur sur Windows
-        if os.name == 'nt':  # Windows
+        if os.name == "nt":  # Windows
             # Vérifier si le chemin semble contenir un utilisateur Windows générique
-            windows_path_pattern = r'^[A-Z]:\\Users\\(?:User|Username)\\(.+)$'
-            matches = re.search(windows_path_pattern, clean_folder, re.IGNORECASE)
+            windows_path_pattern = r"^[A-Z]:\\Users\\(?:User|Username)\\(.+)$"
+            matches = re.search(
+                windows_path_pattern, clean_folder, re.IGNORECASE
+            )
             if matches:
                 # Obtenir le vrai chemin utilisateur
                 documents_subpath = matches.group(1)
-                real_user_folder = os.path.expanduser("~")  # Obtient le chemin réel de l'utilisateur actuel
-                corrected_path = os.path.join(real_user_folder, documents_subpath)
-                print(f"Corrected user path from {clean_folder} to {corrected_path}")
+                real_user_folder = os.path.expanduser(
+                    "~"
+                )  # Obtient le chemin réel de l'utilisateur actuel
+                corrected_path = os.path.join(
+                    real_user_folder, documents_subpath
+                )
+                print(
+                    f"Corrected user path from {clean_folder} to {corrected_path}"
+                )
                 clean_folder = corrected_path
 
         # Déterminer le chemin absolu du dossier racine fourni par l'utilisateur
@@ -283,11 +320,15 @@ async def explore_directory(
 
         # Vérifier si le dossier existe
         if not root_path.exists() or not root_path.is_dir():
-            print(f"Warning: User-provided directory {root_path} does not exist")
+            print(
+                f"Warning: User-provided directory {root_path} does not exist"
+            )
 
             # Vérifier s'il y a des parties du chemin qui existent
             parent_path = root_path
-            while parent_path != parent_path.parent and not parent_path.exists():
+            while (
+                parent_path != parent_path.parent and not parent_path.exists()
+            ):
                 parent_path = parent_path.parent
 
             if parent_path.exists() and parent_path.is_dir():
@@ -296,21 +337,27 @@ async def explore_directory(
 
                 # Retourner cette information mais avec un avertissement
                 directory_tree = get_tree(root_path)
-                formatted_tree = [str(p) for p in directory_tree] if directory_tree else [str(root_path)]
+                formatted_tree = (
+                    [str(p) for p in directory_tree]
+                    if directory_tree
+                    else [str(root_path)]
+                )
 
                 return {
                     "root_folder": str(root_path),
                     "directory_tree": formatted_tree,
                     "count": len(formatted_tree),
-                    "warning": f"Directory {clean_folder} not found. Using {root_path} instead."
+                    "warning": f"Directory {clean_folder} not found. Using {root_path} instead.",
                 }
             else:
                 # Retourner un message d'erreur mais avec un statut 200 pour ne pas bloquer l'interface
                 return {
                     "root_folder": str(root_path),
-                    "directory_tree": [str(root_path)],  # Au moins le dossier racine
+                    "directory_tree": [
+                        str(root_path)
+                    ],  # Au moins le dossier racine
                     "count": 1,
-                    "warning": f"Directory {clean_folder} does not exist. Please provide a valid directory."
+                    "warning": f"Directory {clean_folder} does not exist. Please provide a valid directory.",
                 }
 
         # Obtenir l'arborescence complète des dossiers
@@ -329,7 +376,11 @@ async def explore_directory(
             "root_folder": str(root_path),
             "directory_tree": formatted_tree,
             "count": len(formatted_tree),
-            "warning": "No subdirectories found in the selected directory. Files will be placed in the root folder." if len(formatted_tree) <= 1 else None
+            "warning": (
+                "No subdirectories found in the selected directory. Files will be placed in the root folder."
+                if len(formatted_tree) <= 1
+                else None
+            ),
         }
     except Exception as e:
         print(f"Error exploring directory: {str(e)}")
@@ -339,5 +390,5 @@ async def explore_directory(
             "root_folder": str(root_folder),
             "directory_tree": [str(root_folder)],  # Au moins le dossier racine
             "count": 1,
-            "error": f"Error exploring directory: {str(e)}"
+            "error": f"Error exploring directory: {str(e)}",
         }
