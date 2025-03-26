@@ -7,7 +7,6 @@ services:
       dockerfile: Dockerfile
     image: "document_sorting_assistant"
     ports:
-      - "5000:5000"
+      - "8000:8000"
     container_name: "document_sorting_assistant_cn"
     restart: unless-stopped
-    command: bash -c "while true; do sleep 1; done"

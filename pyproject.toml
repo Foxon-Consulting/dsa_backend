@@ -16,10 +16,13 @@ dependencies = [
   "langchain-openai",
   "faiss-cpu",
   "crewai",
-  "streamlit"
+  "streamlit",
+  "PyPDF2",
+  "python-multipart"
 ]
 
 [project.optional-dependencies]
+fastapi = ["fastapi", "uvicorn"]
 ci = ["black", "coverage", "pylint", "flake8"]
 cd = ["twine"]
 
