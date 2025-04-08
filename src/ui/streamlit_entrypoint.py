@@ -17,12 +17,12 @@ from lib import suggest_filedirectory as get_suggested_path
 # langtrace.init(api_key = '64a6e4a48594fe5a04465a6667a5fa264baa953cf14d25538e7c502da88df0ef')
 
 
-def sanitize_filename(filename):
-    """Remove or replace invalid characters for Windows file system."""
-    invalid_chars = '<>:"/\\|?*'
-    return "".join(
-        "_" if c in invalid_chars else c for c in str(filename)
-    ).strip()
+# def sanitize_filename(filename):
+#     """Remove or replace invalid characters for Windows file system."""
+#     invalid_chars = '<>:"/\\|?*'
+#     return "".join(
+#         "_" if c in invalid_chars else c for c in str(filename)
+#     ).strip()
 
 
 logging.basicConfig(
@@ -39,9 +39,22 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OLLAMA_API_KEY = "sk-1111"
-ROOT_FOLDER = Path("tests/dir")
-TEMP_FILE_PATH = Path("tests/temp_upload/temp_file.pdf")
 
+# Créer le chemin vers le fichier temporaire dans un dossier "temp" au même niveau que le code
+current_dir = Path(__file__).parent
+TEMP_DIR = current_dir / "temp"
+TEMP_FILE_PATH = TEMP_DIR / "temp_file.pdf"
+LOGS_FILE_PATH = current_dir.parent.parent / "logs" / "analyse_file_task.md"
+
+# Créer le répertoire temp s'il n'existe pas
+TEMP_DIR.mkdir(exist_ok=True)
+
+def read_logs_file():
+    """Lire le contenu du fichier de logs"""
+    if LOGS_FILE_PATH.exists():
+        return LOGS_FILE_PATH.read_text(encoding="utf-8")
+    else:
+        return "Le fichier de logs n'existe pas encore."
 
 def main():
     st.title("📝 PDF Naming and Sorting App")
@@ -50,146 +63,45 @@ def main():
         st.session_state.messages = [
             {
                 "role": "assistant",
-                "content": "With the uploaded PDF file or folder, I can help you rename it and sort it.",
+                "content": "With the uploaded PDF file, I can help you rename it.",
             }
         ]
-    if "upload_type" not in st.session_state:
-        st.session_state.upload_type = "File"
 
-    reader_model_selection = st.selectbox(
-        "Select a model for that wil suggest a name and a path for the following file",
-        ["claude haiku", "deepseek", "gpt-4o-mini"],
-    )
+    # Upload file section
+    pdf_variable = st.file_uploader("Upload a PDF file", type=["pdf"])
 
-    def get_llm_choice(reader_model_selection):
-        if reader_model_selection == "claude haiku":
-            llm = LLM(api_key=CLAUDE_API_KEY, model="claude-3-haiku-20240307")
-            return llm
-        elif reader_model_selection == "gpt-4o-mini":
-            llm = LLM(api_key=OPENAI_API_KEY, model="gpt-4o-mini")
-            return llm
-        elif reader_model_selection == "deepseek":
-            llm = LLM(api_key=DEEPSEEK_API_KEY, model="deepseek/deepseek-chat")
-            return llm
+    if pdf_variable:
+        # Écrire le fichier temporaire
+        with TEMP_FILE_PATH.open("wb") as f:
+            f.write(pdf_variable.getbuffer())
 
-    llm = get_llm_choice(reader_model_selection)
+        st.session_state["messages"].append(
+            {
+                "role": "user",
+                "content": f"User uploaded a PDF file: {pdf_variable.name}",
+            }
+        )
 
-    # Initialize session state for upload type
-    if "upload_type" not in st.session_state:
-        st.session_state["upload_type"] = "File"
+        if st.button("Process File"):
+            # Obtenir le nom suggéré
+            suggested_name = get_suggested_file_name(str(TEMP_FILE_PATH))
 
-    # Upload type selection
-    upload_type = st.radio("Select upload type:", ("File", "Folder"))
-    st.session_state["upload_type"] = upload_type
+            # Afficher le résultat
+            rename_result = f"## Here is the Rename Result \n\n {suggested_name}"
 
-    if upload_type == "File":
-        if pdf_variable := st.file_uploader("Upload a PDF file", type=["pdf"]):
-            if pdf_variable:
-                with TEMP_FILE_PATH.open("wb") as f:
-                    f.write(pdf_variable.getbuffer())
-                st.session_state["messages"].append(
-                    {
-                        "role": "user",
-                        "content": f"User uploaded a PDF file: {pdf_variable.name}",
-                    }
-                )
+            st.session_state.messages.append(
+                {"role": "assistant", "content": rename_result}
+            )
 
-                suggested_name = sanitize_filename(
-                    get_suggested_file_name(TEMP_FILE_PATH, llm)
-                )
-                suggested_path = get_suggested_path(
-                    ROOT_FOLDER, TEMP_FILE_PATH, llm
-                )
+            st.chat_message("assistant").write(rename_result)
 
-                rename_result = (
-                    f"## Here is the Rename Result \n\n {suggested_name}"
-                )
-                sort_result = (
-                    f"## Here is the Path Result \n\n {suggested_path}"
-                )
+            # Lire et afficher le contenu du fichier de logs
+            logs_content = read_logs_file()
+            st.markdown("## Log File Content")
+            st.markdown(logs_content)
 
-                st.session_state.messages.extend(
-                    [
-                        {"role": "assistant", "content": rename_result},
-                        {"role": "assistant", "content": sort_result},
-                    ]
-                )
-
-                st.chat_message("assistant").write(rename_result)
-                st.chat_message("assistant").write(sort_result)
-
-                # Automatically move and rename the file
-                target_path = Path(suggested_path) / suggested_name
-                target_path.parent.mkdir(parents=True, exist_ok=True)
-                TEMP_FILE_PATH.rename(target_path)
-
-                success_message = f"File has been renamed to {suggested_name} and moved to {suggested_path}"
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": success_message}
-                )
-                st.chat_message("assistant").write(success_message)
-
-                logging.info(f"File processed: {success_message}")
-
-    else:  # Folder upload
-        if zip_file := st.file_uploader("Upload a ZIP folder", type=["zip"]):
-            if zip_file:
-                # Create temporary directory for extraction
-                temp_dir = Path("temp_extract")
-                temp_dir.mkdir(exist_ok=True)
-
-                # Save and extract zip file
-                zip_path = temp_dir / "upload.zip"
-                with zip_path.open("wb") as f:
-                    f.write(zip_file.getbuffer())
-
-                # Extract zip file
-                import zipfile
-
-                with zipfile.ZipFile(zip_path, "r") as zip_ref:
-                    zip_ref.extractall(temp_dir)
-
-                # Process each PDF in the extracted folder
-                for pdf_file in temp_dir.glob("**/*.pdf"):
-                    # Get suggestions
-                    suggested_name = sanitize_filename(
-                        get_suggested_file_name(pdf_file, llm)
-                    )
-                    suggested_path = get_suggested_path(
-                        ROOT_FOLDER, pdf_file, llm
-                    )
-
-                    # Display suggestions
-                    rename_result = f"## Rename suggestion for {pdf_file.name}\n\n{suggested_name}"
-                    sort_result = f"## Path suggestion\n\n{suggested_path}"
-
-                    st.session_state.messages.extend(
-                        [
-                            {"role": "assistant", "content": rename_result},
-                            {"role": "assistant", "content": sort_result},
-                        ]
-                    )
-
-                    st.chat_message("assistant").write(rename_result)
-                    st.chat_message("assistant").write(sort_result)
-
-                    # Automatically move and rename the file
-                    target_path = Path(suggested_path) / suggested_name
-                    target_path.parent.mkdir(parents=True, exist_ok=True)
-                    pdf_file.rename(target_path)
-
-                    logging.info(
-                        f"File processed: {pdf_file.name} -> {target_path}"
-                    )
-
-                # Clean up temporary directory
-                shutil.rmtree(temp_dir)
-
-                success_message = "All files have been processed and moved to their suggested locations."
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": success_message}
-                )
-                st.chat_message("assistant").write(success_message)
+            # Journaliser l'information
+            logging.info(f"File processed: {pdf_variable.name} -> suggested name: {suggested_name}")
 
 
 if __name__ == "__main__":

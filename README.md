@@ -1,14 +1,19 @@
 # README
 
-## Quick setup of environment:
-```setup.sh``` to fast setup your environment. It will:
+## Lib alone interface (dans lib):
+- suggest_filename(file: Path) -> str
+- suggest_filedirectory(file: Path, directories: List[str]) -> str
 
-- Create a python virtual environment .venv
-- Activate the virtual environment
-- Install the package in development mode inside the virtual environment
+## via le CLI (dans cli, fait appel a la lib)
+suggest_filename = "cli.dsa:suggest_filename"
+suggest_filedirectory = "cli.dsa:suggest_filedirectory"
 
-# Give explanation of each scripts
-commands to run fastapi :
--cd .\src\app\api
--$env:PYTHONPATH = "../../"
->> uvicorn main:app --reload
+## via streamlit (dans ui)
+- lancer streamlit run streamlit_entrypoint.py
+
+## via gradio (dans ui)
+- lancer python gradio_entrypoint.py
+
+## via fastapi
+- cd .\src\app\api
+- uvicorn src.api.main:app --reload

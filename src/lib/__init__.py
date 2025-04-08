@@ -1,14 +1,8 @@
 from pathlib import Path
 from crewai import LLM
 from typing import List
-import os
-import mimetypes
-import PyPDF2
-import io
 
 from .crews import DocumentSortingAssistantCrew
-# from .helper import convert_pdf_to_markdown
-
 
 def suggest_filename(file: Path) -> str:
     """

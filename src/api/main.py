@@ -28,12 +28,6 @@ app.add_middleware(
 class SuggestionResponse(BaseModel):
     suggestion: str
 
-@app.exception_handler(Exception)
-async def global_exception_handler(request, exc):
-    error_msg = str(exc)
-    traceback_str = traceback.format_exc()
-    print(f"Global exception: {error_msg}\n{traceback_str}")
-    return JSONResponse(status_code=500, content={"detail": error_msg})
 
 @app.post("/suggest-filename", response_model=SuggestionResponse)
 async def suggest_filename(file: UploadFile = File(...)):
@@ -153,3 +147,13 @@ async def suggest_filedirectory(
                 print(f"Successfully deleted temp file: {temp_path}")
             except Exception as e:
                 print(f"Failed to delete temp file: {str(e)}")
+
+
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    error_msg = str(exc)
+    traceback_str = traceback.format_exc()
+    print(f"Global exception: {error_msg}\n{traceback_str}")
+    return JSONResponse(status_code=500, content={"detail": error_msg})

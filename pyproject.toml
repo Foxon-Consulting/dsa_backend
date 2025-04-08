@@ -18,7 +18,8 @@ dependencies = [
   "crewai-tools",
   "pydantic",
   "docling",
-  "accelerate"
+  "accelerate",
+  "boto3" # required for FileReadTool
 ]
 
 [project.optional-dependencies]

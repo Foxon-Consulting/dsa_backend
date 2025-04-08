@@ -170,3 +170,5 @@ db/**
 /logs/*
 
 documents
+**/temp*
+**/temp_upload*
