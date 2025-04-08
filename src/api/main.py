@@ -1,3 +1,10 @@
+"""
+API Document Sorting Assistant
+
+Ce module fournit une API FastAPI pour suggérer des noms de fichiers et des répertoires
+basés sur l'analyse du contenu des fichiers.
+"""
+
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -26,10 +33,10 @@ app = FastAPI(
     ]
 )
 
-# Configure CORS
+# Configuration CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Frontend URL
+    allow_origins=["*"],  # Permet toutes les origines
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,18 +47,26 @@ app.add_middleware(
 async def create_temp_file(file: UploadFile):
     """
     Crée un fichier temporaire à partir d'un fichier uploadé.
-    Nettoie automatiquement le fichier après utilisation.
+
+    Args:
+        file (UploadFile): Le fichier uploadé par l'utilisateur
+
+    Yields:
+        Path: Le chemin vers le fichier temporaire créé
+
+    Notes:
+        Le fichier temporaire est automatiquement supprimé à la fin de l'utilisation.
     """
     temp_path = None
     try:
-        # Créer un fichier temporaire pour stocker le fichier uploadé
+        # Créer un fichier temporaire
         temp_file = tempfile.NamedTemporaryFile(
             delete=False, suffix=f"_{file.filename}"
         )
         temp_path = temp_file.name
         temp_file.close()  # Fermer le fichier pour éviter les erreurs d'accès
 
-        # Écrire le contenu du fichier par morceaux pour éviter les problèmes de mémoire
+        # Écrire le contenu du fichier
         content = await file.read()
         with open(temp_path, "wb") as f:
             f.write(content)
@@ -65,9 +80,9 @@ async def create_temp_file(file: UploadFile):
         if temp_path and os.path.exists(temp_path):
             try:
                 os.unlink(temp_path)
-                print(f"Successfully deleted temp file: {temp_path}")
+                print(f"Fichier temporaire supprimé: {temp_path}")
             except Exception as e:
-                print(f"Failed to delete temp file: {str(e)}")
+                print(f"Erreur lors de la suppression du fichier temporaire: {str(e)}")
 
 
 @app.post(
@@ -82,15 +97,26 @@ async def create_temp_file(file: UploadFile):
 async def suggest_filename(
     file: UploadFile,
 ):
+    """
+    Suggère un nom de fichier basé sur le contenu du fichier uploadé.
+
+    Args:
+        file (UploadFile): Le fichier à analyser
+
+    Returns:
+        SuggestFilenameResponse: La réponse contenant le nom suggéré
+
+    Raises:
+        HTTPException: Si une erreur survient pendant le traitement
+    """
     try:
         async with create_temp_file(file) as temp_path:
-            # Utiliser ce fichier temporaire comme entrée pour get_suggested_file_name
             result = get_suggested_file_name(str(temp_path))
             # Extraire la chaîne de l'objet CrewOutput
             suggested_name = result.raw if hasattr(result, 'raw') else str(result)
             return SuggestFilenameResponse(suggestion=suggested_name)
     except Exception as e:
-        print(f"Error in suggest_filename: {str(e)}")
+        print(f"Erreur dans suggest_filename: {str(e)}")
         traceback.print_exc()
         raise HTTPException(
             status_code=500, detail=f"Error processing file: {str(e)}"
@@ -110,6 +136,19 @@ async def suggest_directory(
     file: UploadFile,
     directories: List[str]
 ):
+    """
+    Suggère un répertoire pour le placement du fichier.
+
+    Args:
+        file (UploadFile): Le fichier à analyser
+        directories (List[str]): Liste des répertoires candidats
+
+    Returns:
+        SuggestDirectoryResponse: La réponse contenant le répertoire suggéré
+
+    Raises:
+        HTTPException: Si une erreur survient pendant le traitement ou si la liste des répertoires est vide
+    """
     try:
         # Vérifier que la liste des répertoires contient au moins un élément
         if not directories:
@@ -120,14 +159,12 @@ async def suggest_directory(
 
         async with create_temp_file(file) as temp_path:
             try:
-                # La fonction get_suggested_path attend maintenant une liste de strings et un fichier
-                # Elle renverra le meilleur répertoire parmi les options
                 result = get_suggested_path(str(temp_path), directories)
                 # Extraire la chaîne de l'objet CrewOutput
                 suggested_directory = result.raw if hasattr(result, 'raw') else str(result)
                 return SuggestDirectoryResponse(suggestion=suggested_directory)
             except Exception as e:
-                print(f"Error finding suggested directory: {str(e)}")
+                print(f"Erreur lors de la recherche du répertoire suggéré: {str(e)}")
                 traceback.print_exc()
                 raise HTTPException(
                     status_code=500,
@@ -137,7 +174,7 @@ async def suggest_directory(
         # Re-lever les HTTP exceptions déjà formatées
         raise
     except Exception as e:
-        print(f"Error in suggest_directory: {str(e)}")
+        print(f"Erreur dans suggest_directory: {str(e)}")
         traceback.print_exc()
         raise HTTPException(
             status_code=500, detail=f"Error processing request: {str(e)}"
@@ -146,7 +183,17 @@ async def suggest_directory(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
+    """
+    Gestionnaire global des exceptions non gérées.
+
+    Args:
+        request: La requête qui a provoqué l'exception
+        exc (Exception): L'exception qui s'est produite
+
+    Returns:
+        JSONResponse: Une réponse JSON avec le message d'erreur
+    """
     error_msg = str(exc)
     traceback_str = traceback.format_exc()
-    print(f"Global exception: {error_msg}\n{traceback_str}")
+    print(f"Exception globale: {error_msg}\n{traceback_str}")
     return JSONResponse(status_code=500, content={"detail": error_msg})
