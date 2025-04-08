@@ -7,7 +7,8 @@ from litellm import completion
 from typing import List
 from pathlib import Path
 from crewai import LLM
-from dsa.__init__ import get_suggested_file_name, get_suggested_path
+from lib import suggest_filename as get_suggested_file_name
+from lib import suggest_filedirectory as get_suggested_path
 
 # Must precede any llm module imports
 

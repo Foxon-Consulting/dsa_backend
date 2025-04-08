@@ -1,0 +1,51 @@
+flowchart-diagram
+styleMode plain
+
+user [icon: user]
+
+
+// Composants
+Architecture {
+  ui [icon: folder, color: blue] {
+    Streamlit [icon: layout]
+    Gradio [icon: layout]
+  }
+
+  cli [icon: folder, color: grey] {
+    docsort [icon: terminal]
+  }
+
+  api [icon: folder, color: green] {
+    FastAPI [icon: server]
+  }
+
+  lib [icon: folder, color: purple] {
+    Crews [icon: users] {
+      RenameCrew [icon: user]
+      SortCrew [icon: user]
+    }
+    Tasks [icon: check-square]
+    Agents [icon: user]
+    Tools [icon: tools]
+
+  }
+}
+
+// Relations
+ui > lib: direct call
+api > lib: direct call
+cli > lib: direct call
+
+user <> ui: direct use
+user <> cli: direct call
+user <> api: HTTP request
+
+Crews < Agents : has
+Crews < Tasks : has
+
+Agents < Tools : has
+Tasks < Agents : has
+
+// PDFTools <> LLM: Analyse des documents
+// Crews <> LLM: Prédictions
+// Crews <> PDFTools: Traitement des fichiers

@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path, WindowsPath
 from dsa import get_tree, get_suggested_file_name, get_suggested_path
-from common.docsort import _docsort
+from cli.docsort import _docsort
 
 
 class DocsortTest(unittest.TestCase):

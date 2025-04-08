@@ -11,22 +11,26 @@ readme = "README.md"
 authors = [ { name = "Louis", email = "louis.dalonis@gmail.com"}]
 
 dependencies = [
-  "tomli",
   "langchain-community",
   "langchain-openai",
   "faiss-cpu",
   "crewai",
-  "streamlit",
-  "fastapi",
-  "PyPDF2"
+  "crewai-tools",
+  "pydantic",
+  "docling",
+  "accelerate"
 ]
 
 [project.optional-dependencies]
 ci = ["black", "coverage", "pylint", "flake8"]
 cd = ["twine"]
+fastapi = ["fastapi", "uvicorn"]
+streamlit = ["streamlit"]
+gradio = ["gradio"]
 
 [project.scripts]
-docsort = "common.docsort:main"
+suggest_filename = "cli.dsa:suggest_filename"
+suggest_filedirectory = "cli.dsa:suggest_filedirectory"
 
 [tool.black]
 line-length = 79

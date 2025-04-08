@@ -4,7 +4,8 @@ import logging
 from typing import List
 from pathlib import Path
 from crewai import LLM
-from dsa import get_suggested_file_name, get_suggested_path
+from lib import suggest_filename as get_suggested_file_name
+from lib import suggest_filedirectory as get_suggested_path
 import gradio as gr
 
 logging.basicConfig(
