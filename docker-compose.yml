@@ -1,11 +1,14 @@
 version: '3'
 
 services:
-  langchain-toolkit:
-    image: foxonconsulting/langchain-toolkit:1.0.0
-    volumes:
-      - //var/run/docker.sock:/var/run/docker.sock
-      - ./:/document_sorting_assistant
-    container_name: "document_sorting_assistant-toolkit_cn"
+  dsa_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "dsa_backend"
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    container_name: "dsa_cn"
     restart: unless-stopped
-    command: bash -c "while true; do sleep 1; done"

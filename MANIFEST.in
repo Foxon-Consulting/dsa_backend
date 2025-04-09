@@ -1,1 +1,1 @@
-include src/common/config.toml
+include src/lib/config/*.yaml

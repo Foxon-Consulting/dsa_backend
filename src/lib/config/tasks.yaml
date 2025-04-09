@@ -1,0 +1,37 @@
+analyse_file_task:
+  name: >
+    Analysis of file {file}
+  description: >
+    Analyze the content of the provided file {file} thoroughly to understand its main subject,
+    important dates mentioned, key topics, and overall purpose.
+    Use the tools to convert file to markdown or text to read and extract content from the file.
+    Provide a comprehensive yet concise summary of the document that will help in determining
+    the most appropriate name and directory for the file.
+  expected_output: >
+    A detailed summary of the document including: main subject, date(s) present in the document,
+    key topics or sections, and any other relevant information that would help with organizing and naming the file.
+    Include the detected date in ISO format (YYYY-MM-DD) if available.
+  agent: analyse_file_agent
+
+suggest_filename_task:
+  name: >
+    Suggest a new name for the file {file}
+  description: >
+    Suggest a new name for the file {file}, based on its content and date.
+    Review the analysis provided for the document and create a clear, descriptive filename
+    that follows our naming convention and reflects the document's content accurately.
+  expected_output: >
+    Suggest a name for the file and its corresponding date (if it exists) and in correlation with its content
+    with ONLY THE following format: '<year-month-day> <name of the file>'.
+    The name should be descriptive, concise, and reflect the main subject of the document.
+  agent: suggest_filename_agent
+
+suggest_directory_task:
+  name: >
+    Suggest a new directory for the file {file} from a list of directories {directories}
+  description: >
+    Suggest a directory for the file {file} from a list of directories {directories}, based on its content and date.
+    Review the analysis provided for the document and choose the most appropriate directory from the list of directories {directories}.
+  expected_output: >
+    ONLY the name of the directory that should be used to sort the file {file} from the list of directories {directories}.
+  agent: suggest_directory_agent
