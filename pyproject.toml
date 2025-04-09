@@ -23,8 +23,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-ci = ["black", "coverage", "pylint"]
-cd = ["twine"]
+dev = ["black", "flake8", "pytest", "coverage", "pylint"]
 fastapi = ["fastapi", "uvicorn", "python-multipart"]
 streamlit = ["streamlit"]
 gradio = ["gradio"]

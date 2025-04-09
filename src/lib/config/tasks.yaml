@@ -1,6 +1,6 @@
 analyse_file_task:
   name: >
-    Analyse du fichier {file}
+    Analysis of file {file}
   description: >
     Analyze the content of the provided file {file} thoroughly to understand its main subject,
     important dates mentioned, key topics, and overall purpose.

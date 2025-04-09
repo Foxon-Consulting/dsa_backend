@@ -1,44 +1,44 @@
-# Document Sorting Assistant - Interface Streamlit
+# Document Sorting Assistant - Streamlit Interface
 
-Ce fichier `streamlit_entrypoint.py` fournit une interface utilisateur web pour l'application Document Sorting Assistant.
+This `streamlit_entrypoint.py` file provides a web user interface for the Document Sorting Assistant application.
 
-## Fonctionnalités
+## Features
 
-- Téléchargement de documents (PDF, DOCX, TXT, etc.)
-- Suggestion automatique de noms de fichiers basée sur le contenu
-- Sélection des répertoires cibles
-- Suggestion du répertoire le plus approprié pour classer le document
-- Affichage des logs de traitement
+- Document upload (PDF, DOCX, TXT, etc.)
+- Automatic file name suggestions based on content
+- Target directory selection
+- Suggestion of the most appropriate directory to classify the document
+- Display of processing logs
 
-## Prérequis
+## Prerequisites
 
 - Python 3.8+
 - Streamlit
-- Les dépendances de la bibliothèque principale
+- Main library dependencies
 
 ## Installation
 
-Assurez-vous que les dépendances nécessaires sont installées :
+Make sure the necessary dependencies are installed:
 
 ```bash
 pip install .
 pip install .[streamlit]
 ```
 
-## Utilisation
+## Usage
 
-Pour démarrer l'interface Streamlit :
+To start the Streamlit interface:
 
 ```bash
 streamlit run src/ui/streamlit_entrypoint.py
 ```
 
-L'application sera accessible dans votre navigateur à l'adresse `http://localhost:8501`.
+The application will be accessible in your browser at `http://localhost:8501`.
 
-## Guide d'utilisation
+## User Guide
 
-1. Téléchargez un document en utilisant le champ de téléchargement
-2. Cliquez sur "Process File" pour obtenir une suggestion de nom basée sur le contenu
-3. Sélectionnez un répertoire racine pour afficher les sous-répertoires disponibles
-4. Cliquez sur "Process Directory" pour obtenir une suggestion de répertoire où classer le document
-5. Consultez les logs pour voir l'historique des traitements
+1. Upload a document using the upload field
+2. Click on "Process File" to get a content-based name suggestion
+3. Select a root directory to display available subdirectories
+4. Click on "Process Directory" to get a suggestion for the directory to classify the document
+5. Check the logs to see the processing history

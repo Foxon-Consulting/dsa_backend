@@ -1,127 +1,120 @@
 # Document Sorting Assistant
 
-Un assistant intelligent pour organiser et classer vos documents automatiquement en utilisant l'IA.
+An intelligent assistant to automatically organize and classify your documents using AI.
 
-## Fonctionnalités
+## Features
 
-- Suggestion de noms de fichiers basée sur le contenu
-- Classification automatique des documents
-- Interface utilisateur Streamlit
-- API REST avec FastAPI
-- Support Docker pour le déploiement
+- File name suggestions based on content
+- Automatic document classification
+- Streamlit user interface
+- REST API with FastAPI
+- Docker support for deployment
 
-## Prérequis
+## Architecture
 
-- Python 3.11 ou supérieur
-- pip (gestionnaire de paquets Python)
-- Docker (optionnel, pour le déploiement)
+![Project Architecture](docs/architecture.svg)
+
+The project is structured into several main components:
+- User Interface (Streamlit)
+- Command Line Interface (CLI)
+- REST API (FastAPI)
+- Core library with:
+  - Document analysis agents
+  - File reading tools
+  - Text and markdown processing tools
+
+## Prerequisites
+
+- Python 3.11 or higher
+- pip (Python package manager)
+- Docker (optional, for deployment)
 
 ## Installation
 
-### Installation de base
+### Basic Installation
 ```bash
 pip install .
 ```
 
-### Installation avec interface utilisateur Streamlit
+### Installation with Streamlit UI
 ```bash
 pip install .[streamlit]
 ```
 
-### Installation avec API FastAPI
+### Installation with FastAPI
 ```bash
 pip install .[fastapi]
 ```
 
-### Installation pour le développement
+### Development Installation
 ```bash
 pip install .[ci,cd]
 ```
 
-## Utilisation
+## Usage
 
-### Interface en ligne de commande (CLI)
+### Command Line Interface (CLI)
 ```bash
-# Suggérer un nom de fichier
+# Suggest a filename
 suggest_filename -f <filename>
 
-# Suggérer un répertoire
+# Suggest a directory
 suggest_directory -f <filename> -d <directory1> -d <directory2> ...
 ```
 
-### Interface utilisateur Streamlit
+### Streamlit User Interface
 ```bash
+# by installed script
 run_ui
+# or directly with streamlit
+streamlit run src/streamlit_entrypoint.py
 ```
 
-### API FastAPI
+### FastAPI
 ```bash
 run_api
 ```
 
-## Déploiement
+## Deployment
 
-### Déploiement local avec Docker
+### Local Deployment with Docker
 ```bash
-# Construire l'image Docker
-docker build . -t dsa
-
-# Lancer avec docker-compose
-docker-compose up
+# Launch with docker-compose
+docker-compose up --build
 ```
 
-## Développement
+## Development
 
 ### Tests
 ```bash
-# Installer les dépendances de test
-pip install .[ci]
+# Install test dependencies
+pip install .[integration]
 
-# Exécuter les tests
+# Run tests
 pytest
 ```
 
 ### Linting
 ```bash
-# Vérifier le style de code
+# Check code style
+cd src
 black .
 flake8
 ```
 
 ### Packaging
 ```bash
-# Construire le package Python
+# Build Python package
 python -m build
-
-# Publier sur PyPI (nécessite un compte)
-twine upload dist/*
 ```
 
 ## Configuration
 
-Le projet utilise un fichier `.env` pour la configuration. Copiez `.env.example` vers `.env` et modifiez les variables selon vos besoins.
+The project uses a `.env` file for configuration. Rename `.env.example` to `.env` and modify the variables according to your needs.
 
-## Contribution
-
-Les contributions sont les bienvenues ! Veuillez consulter les directives de contribution dans le dossier `.github`.
-
-## Licence
-
-[À définir]
+### Environment Variables:
+- `OPEN_API_KEY`: Your OpenAI API key for AI features
 
 ## Contact
 
-Pour toute question ou suggestion, contactez [Louis](mailto:louis.dalonis@gmail.com).
-
-## Packaging
-### Python package
-python -m build
-
-### docker image
-docker build . -t dsa
-
-## Deploying
-### Locally
-  docker-compose
-
-### Terraform (in progress)
+For any questions or suggestions, contact [Mehdi](mailto:mehdi.halitim@foxonconsulting.com).
