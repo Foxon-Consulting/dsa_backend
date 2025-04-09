@@ -3,7 +3,7 @@ requires = ["setuptools >= 57.0", "wheel" ]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "document_sorting_assistant"
+name = "dsa_backend"
 version = "0.1.0"
 description = "Project description"
 requires-python = ">=3.11"

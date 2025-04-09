@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: "document_sorting_assistant"
+    image: "dsa_backend"
     ports:
       - "8000:8000"
     environment:

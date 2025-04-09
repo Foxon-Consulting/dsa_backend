@@ -3,7 +3,7 @@ FROM python:3.12 as builder
 WORKDIR /app
 
 # x-release-please-start-version
-ARG PREFIX="document_sorting_assistant-0.1.0"
+ARG PREFIX="dsa_backend-0.1.0"
 # x-release-please-end
 
 # Copie des fichiers nécessaires pour construire le wheel
@@ -21,7 +21,7 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # x-release-please-start-version
-ARG PREFIX="document_sorting_assistant-0.1.0"
+ARG PREFIX="dsa_backend_assistant-0.1.0"
 # x-release-please-end
 
 # Copie du wheel depuis l'étape de build
