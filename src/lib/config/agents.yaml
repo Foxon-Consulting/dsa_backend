@@ -9,7 +9,7 @@ analyse_file_agent:
     Never invent or suggest directories that aren't in the provided list of available paths.
   # llm: !env ${OPENAI_API_KEY}
 
-suggest_file_name_agent:
+suggest_filename_agent:
   role: "Document Naming Specialist"
   backstory: >
     You are a professional expert in naming documents based on their content.

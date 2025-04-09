@@ -32,12 +32,14 @@ DEFAULT_DIRECTORIES = [
     str(DEFAULT_ROOT_DIR_2),
 ]
 
+
 def read_logs_file():
     """Read the contents of the log file"""
     if LOGS_FILE_PATH.exists():
         return LOGS_FILE_PATH.read_text(encoding="utf-8")
     else:
         return "The log file does not exist yet."
+
 
 def directory_selection_section():
     st.subheader("Select a root directory")
@@ -53,7 +55,7 @@ def directory_selection_section():
     selected_root_directory = st.selectbox(
         "Select a root directory",
         options=DEFAULT_DIRECTORIES,
-        index=0  # Select the first default directory
+        index=0,  # Select the first default directory
     )
 
     # If the root directory has changed, reset the subdirectory list
@@ -63,7 +65,9 @@ def directory_selection_section():
 
     if selected_root_directory:
         # Find all subdirectories (not files)
-        subdirs = [d for d in Path(selected_root_directory).glob("*") if d.is_dir()]
+        subdirs = [
+            d for d in Path(selected_root_directory).glob("*") if d.is_dir()
+        ]
 
         if subdirs:
             st.write(f"Subdirectories found in {selected_root_directory}:")
@@ -78,15 +82,34 @@ def directory_selection_section():
                 st.write(f"- {subdir.name}")
 
             # Summary
-            subdir_names = [Path(d).name for d in st.session_state.selected_directories]
-            st.success(f"Subdirectories have been added to the list: {', '.join(subdir_names)}")
+            subdir_names = [
+                Path(d).name for d in st.session_state.selected_directories
+            ]
+            st.success(
+                f"Subdirectories have been added to the list: \
+                     {', '.join(subdir_names)}"
+            )
         else:
             st.write("No subdirectories found.")
 
     return st.session_state.selected_directories
 
+
 def file_upload_section():
-    file_variable = st.file_uploader("Upload a file", type=["pdf","docx","doc","txt","csv","xls","xlsx","ppt","pptx"])
+    file_variable = st.file_uploader(
+        "Upload a file",
+        type=[
+            "pdf",
+            "docx",
+            "doc",
+            "txt",
+            "csv",
+            "xls",
+            "xlsx",
+            "ppt",
+            "pptx",
+        ],
+    )
     if file_variable is not None:
         with TEMP_FILE_PATH.open("wb") as f:
             f.write(file_variable.getbuffer())
@@ -98,27 +121,36 @@ def file_upload_section():
         )
     return file_variable
 
+
 def process_file(temp_file_path):
     from lib import suggest_filename
+
     # Get the suggested name
     suggested_filename = suggest_filename(str(temp_file_path))
     # Display the result
-    suggested_filename_result = f"## Here is the Suggested Filename \n\n {suggested_filename}"
+    suggested_filename_result = (
+        f"## Here is the Suggested Filename \n\n {suggested_filename}"
+    )
     st.session_state.messages.append(
         {"role": "assistant", "content": suggested_filename}
     )
     st.chat_message("assistant").write(suggested_filename_result)
     return suggested_filename
 
+
 def process_directory(temp_file_path, selected_directories):
 
-    from lib import suggest_filedirectory
+    from lib import suggest_directory
 
     # Get the suggested directory
-    suggested_directory = suggest_filedirectory(str(temp_file_path), selected_directories)
+    suggested_directory = suggest_directory(
+        str(temp_file_path), selected_directories
+    )
 
     # Display the result
-    suggested_directory_result = f"## Here is the Directory Result \n\n {suggested_directory}"
+    suggested_directory_result = (
+        f"## Here is the Directory Result \n\n {suggested_directory}"
+    )
 
     st.session_state.messages.append(
         {"role": "assistant", "content": suggested_directory}
@@ -127,21 +159,27 @@ def process_directory(temp_file_path, selected_directories):
     st.chat_message("assistant").write(suggested_directory_result)
 
     # Log the information
-    logging.info(f"Directory processed: {selected_directories} -> suggested directory: {suggested_directory}")
+    logging.info(
+        f"Directory processed: {selected_directories} -> suggested directory: \
+            {suggested_directory}"
+    )
+
 
 def display_logs():
     logs_content = read_logs_file()
     st.markdown("## Log File Content")
     st.markdown(logs_content)
 
-def main():
+
+def streamlit_app():
     st.title("📝 Document Sorting Assistant")
 
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {
                 "role": "assistant",
-                "content": "With the uploaded PDF file, I can help you rename it.",
+                "content": "With the uploaded PDF file, I can help you rename \
+                    it.",
             }
         ]
 
@@ -152,7 +190,10 @@ def main():
                 suggested_filename = process_file(TEMP_FILE_PATH)
                 display_logs()
                 # Log the information
-                logging.info(f"File processed: {file_variable.name} -> suggested name: {suggested_filename}")
+                logging.info(
+                    f"File processed: {file_variable.name} -> suggested name: \
+                        {suggested_filename}"
+                )
 
     selected_dirs = directory_selection_section()
     if selected_dirs:
@@ -162,7 +203,19 @@ def main():
                     process_directory(TEMP_FILE_PATH, selected_dirs)
                     display_logs()
             else:
-                st.error("Please upload and process a PDF file before choosing a directory.")
+                st.error(
+                    "Please upload and process a PDF file before choosing a \
+                        directory."
+                )
+
+
+def main():
+    import streamlit.web.cli as stcli
+    import sys
+
+    sys.argv = ["streamlit", "run", str(Path(__file__).resolve())]
+    sys.exit(stcli.main())
+
 
 if __name__ == "__main__":
     main()

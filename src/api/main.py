@@ -1,7 +1,8 @@
 """
 API Document Sorting Assistant
 
-Ce module fournit une API FastAPI pour suggérer des noms de fichiers et des répertoires
+Ce module fournit une API FastAPI pour suggérer des noms de fichiers et des
+répertoires
 basés sur l'analyse du contenu des fichiers.
 """
 
@@ -10,14 +11,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pathlib import Path
 from lib import suggest_filename as get_suggested_file_name
-from lib import suggest_filedirectory as get_suggested_path
+from lib import suggest_directory as get_suggested_path
 import os
 import tempfile
 import traceback
-from .models.schemas import (
-    SuggestFilenameResponse,
-    SuggestDirectoryResponse
-)
+from .models.schemas import SuggestFilenameResponse, SuggestDirectoryResponse
 from contextlib import asynccontextmanager
 from typing import List
 
@@ -28,9 +26,9 @@ app = FastAPI(
     openapi_tags=[
         {
             "name": "suggestions",
-            "description": "Opérations de suggestion pour le tri de documents"
+            "description": "Opérations de suggestion pour le tri de documents",
         }
-    ]
+    ],
 )
 
 # Configuration CORS
@@ -55,7 +53,8 @@ async def create_temp_file(file: UploadFile):
         Path: Le chemin vers le fichier temporaire créé
 
     Notes:
-        Le fichier temporaire est automatiquement supprimé à la fin de l'utilisation.
+        Le fichier temporaire est automatiquement supprimé à la fin de
+        l'utilisation.
     """
     temp_path = None
     try:
@@ -82,7 +81,10 @@ async def create_temp_file(file: UploadFile):
                 os.unlink(temp_path)
                 print(f"Fichier temporaire supprimé: {temp_path}")
             except Exception as e:
-                print(f"Erreur lors de la suppression du fichier temporaire: {str(e)}")
+                print(
+                    f"Erreur lors de la suppression du fichier temporaire: \
+                    {str(e)}"
+                )
 
 
 @app.post(
@@ -92,7 +94,7 @@ async def create_temp_file(file: UploadFile):
     summary="Suggérer un nom de fichier",
     description="Analyse un fichier et suggère un nom basé sur son contenu",
     response_model_exclude_none=True,
-    operation_id="suggestFilename"
+    operation_id="suggestFilename",
 )
 async def suggest_filename(
     file: UploadFile,
@@ -113,7 +115,9 @@ async def suggest_filename(
         async with create_temp_file(file) as temp_path:
             result = get_suggested_file_name(str(temp_path))
             # Extraire la chaîne de l'objet CrewOutput
-            suggested_name = result.raw if hasattr(result, 'raw') else str(result)
+            suggested_name = (
+                result.raw if hasattr(result, "raw") else str(result)
+            )
             return SuggestFilenameResponse(suggestion=suggested_name)
     except Exception as e:
         print(f"Erreur dans suggest_filename: {str(e)}")
@@ -128,14 +132,12 @@ async def suggest_filename(
     response_model=SuggestDirectoryResponse,
     tags=["suggestions"],
     summary="Suggérer un répertoire",
-    description="Analyse un fichier et suggère le meilleur répertoire parmi une liste de candidats",
+    description="Analyse un fichier et suggère le meilleur répertoire parmi \
+        une liste de candidats",
     response_model_exclude_none=True,
-    operation_id="suggestDirectory"
+    operation_id="suggestDirectory",
 )
-async def suggest_directory(
-    file: UploadFile,
-    directories: List[str]
-):
+async def suggest_directory(file: UploadFile, directories: List[str]):
     """
     Suggère un répertoire pour le placement du fichier.
 
@@ -147,28 +149,35 @@ async def suggest_directory(
         SuggestDirectoryResponse: La réponse contenant le répertoire suggéré
 
     Raises:
-        HTTPException: Si une erreur survient pendant le traitement ou si la liste des répertoires est vide
+        HTTPException: Si une erreur survient pendant le traitement ou si
+        la liste des répertoires est vide
     """
     try:
         # Vérifier que la liste des répertoires contient au moins un élément
         if not directories:
             raise HTTPException(
                 status_code=400,
-                detail="La liste des répertoires ne peut pas être vide"
+                detail="La liste des répertoires ne peut pas être vide",
             )
 
         async with create_temp_file(file) as temp_path:
             try:
                 result = get_suggested_path(str(temp_path), directories)
                 # Extraire la chaîne de l'objet CrewOutput
-                suggested_directory = result.raw if hasattr(result, 'raw') else str(result)
+                suggested_directory = (
+                    result.raw if hasattr(result, "raw") else str(result)
+                )
                 return SuggestDirectoryResponse(suggestion=suggested_directory)
             except Exception as e:
-                print(f"Erreur lors de la recherche du répertoire suggéré: {str(e)}")
+                print(
+                    f"Erreur lors de la recherche du répertoire suggéré: \
+                        {str(e)}"
+                )
                 traceback.print_exc()
                 raise HTTPException(
                     status_code=500,
-                    detail=f"Erreur lors de la recherche du répertoire suggéré: {str(e)}"
+                    detail=f"Erreur lors de la recherche du répertoire \
+                    suggéré: {str(e)}",
                 )
     except HTTPException:
         # Re-lever les HTTP exceptions déjà formatées

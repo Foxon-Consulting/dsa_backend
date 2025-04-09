@@ -23,15 +23,17 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-ci = ["black", "coverage", "pylint", "flake8"]
+ci = ["black", "coverage", "pylint"]
 cd = ["twine"]
-fastapi = ["fastapi", "uvicorn"]
+fastapi = ["fastapi", "uvicorn", "python-multipart"]
 streamlit = ["streamlit"]
 gradio = ["gradio"]
 
 [project.scripts]
 suggest_filename = "cli.dsa:suggest_filename"
-suggest_filedirectory = "cli.dsa:suggest_filedirectory"
+suggest_directory = "cli.dsa:suggest_directory"
+run_api = "api.server:run"
+run_ui = "ui.streamlit_entrypoint:main"
 
 [tool.black]
 line-length = 79

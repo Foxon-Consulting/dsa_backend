@@ -13,7 +13,7 @@ analyse_file_task:
     Include the detected date in ISO format (YYYY-MM-DD) if available.
   agent: analyse_file_agent
 
-suggest_file_name_task:
+suggest_filename_task:
   name: >
     Suggest a new name for the file {file}
   description: >
@@ -24,7 +24,7 @@ suggest_file_name_task:
     Suggest a name for the file and its corresponding date (if it exists) and in correlation with its content
     with ONLY THE following format: '<year-month-day> <name of the file>'.
     The name should be descriptive, concise, and reflect the main subject of the document.
-  agent: suggest_file_name_agent
+  agent: suggest_filename_agent
 
 suggest_directory_task:
   name: >
