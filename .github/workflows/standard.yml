@@ -35,21 +35,21 @@ jobs:
         with:
           RELEASE_PLEASE_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
 
-  delivery:
-    needs:
-      - releasing
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      contents: write
-      pull-requests: write
-    uses: Foxon-Consulting/github-actions/.github/workflows/python_delivery.yml@main
+  # delivery:
+  #   needs:
+  #     - releasing
+  #   if: github.ref == 'refs/heads/main'
+  #   permissions:
+  #     contents: write
+  #     pull-requests: write
+  #   uses: Foxon-Consulting/github-actions/.github/workflows/python_delivery.yml@main
 
-  deployment:
-    needs:
-      - releasing
-      - delivery
-    if: github.ref == 'refs/heads/dev'
-    permissions:
-      contents: write
-      pull-requests: write
-    uses: Foxon-Consulting/github-actions/.github/workflows/python_deployment.yml@main
+  # deployment:
+  #   needs:
+  #     - releasing
+  #     - delivery
+  #   if: github.ref == 'refs/heads/dev'
+  #   permissions:
+  #     contents: write
+  #     pull-requests: write
+  #   uses: Foxon-Consulting/github-actions/.github/workflows/python_deployment.yml@main
